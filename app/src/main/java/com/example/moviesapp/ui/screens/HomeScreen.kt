@@ -2,6 +2,7 @@ package com.example.moviesapp.ui.screens
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,23 +21,28 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.moviesapp.R
 import com.example.moviesapp.data.Movie
+import com.example.moviesapp.utilities.NavigationItem
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) { // Added navController
     MoviesColumn( movies = listOf(
         Movie(drawable = R.drawable.deadpool3, name = "Deadpool 3"),
         Movie(drawable = R.drawable.spiderman, name = "Spider-Man"),
         Movie(drawable = R.drawable.thor_love_thunder, name = "Thor - Love & Thunder")
-        )
+        ),
+        navController = navController
     )
 }
 
 @Composable
 fun MoviesColumn(
     modifier: Modifier = Modifier,
-    movies: List<Movie> = emptyList()
+    movies: List<Movie> = emptyList(),
+    navController: NavController
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -44,7 +50,15 @@ fun MoviesColumn(
         modifier = modifier
     ) {
         items(movies) { movie ->
-            FavoriteCollectionCard(movie.drawable, movie.name)
+            FavoriteCollectionCard(
+                movie.drawable,
+                movie.name,
+                onClick = {
+                    navController
+                        .navigate(
+                            NavigationItem.Detail.route + "/${movie.name}/${movie.drawable}" // Route defined in the navHost that can receives name and drawable
+                        )
+                })
         }
     }
 }
@@ -53,7 +67,8 @@ fun MoviesColumn(
 fun FavoriteCollectionCard(
     @DrawableRes drawable: Int,
     name: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = { } // Empty clickListener by default
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
@@ -63,6 +78,7 @@ fun FavoriteCollectionCard(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
+                .clickable(enabled = true, onClick = onClick)
         ) {
             Image(
                 painter = painterResource(id = drawable),
@@ -91,5 +107,5 @@ fun FavoriteCollectionCardPreview() {
 @Preview(showBackground = true, backgroundColor = 0xFFF5F0EE)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(rememberNavController()) // Set navController by parameter
 }

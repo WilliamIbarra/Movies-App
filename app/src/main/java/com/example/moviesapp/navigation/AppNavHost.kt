@@ -28,17 +28,17 @@ fun AppNavHost(
         composable( // This method adds the composable to the NavGraphBuilder
             route = NavigationItem.Login.route // Route for the destination
         ) {
-            LoginScreen() // Composable for the destination
+            LoginScreen(navController) // Composable for the destination
         }
 
         composable( // This method adds the composable to the NavGraphBuilder
             route = NavigationItem.Home.route // Route for the destination
         ) {
-            HomeScreen() // Composable for the destination
+            HomeScreen(navController) // Composable for the destination
         }
 
         composable( // This method adds the composable to the NavGraphBuilder
-            route = NavigationItem.Detail.route, // Route for the destination
+            route = NavigationItem.Detail.route + "/{movieName}/{movieImage}", // Route for the destination that receives the name and image as arguments
             arguments = listOf( // List of arguments passed by navigation
                 navArgument(name="movieName") { type = NavType.StringType }, // Movie name by argument
                 navArgument(name = "movieImage") { type = NavType.ReferenceType } // Drawable reference
@@ -50,7 +50,7 @@ fun AppNavHost(
             // Create a new movie object
             val movie = Movie(name = name, drawable = image)
 
-            DetailScreen(movie = movie) // Composable for the destination, this composable receives a movie object
+            DetailScreen(movie = movie, navController) // Composable for the destination, this composable receives a movie object
         }
     }
 }
